@@ -1,0 +1,87 @@
+import mongoose, { Schema } from "mongoose";
+import { JsonWebTokenError } from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
+const userSchema = new Schema(
+    {
+        username: {
+            type: String,
+            required : true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+            index: true
+        },
+
+        email : {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true
+        },
+        fullname: {
+            type: String,
+            required: true,
+            trim: true,
+            index: true
+        },
+        avatar : {
+            type: String,
+            required: true,
+        },
+        coverImage: {
+            type: String,
+        },
+        watchHistory: {
+            type:Schema.Types.ObjectId,
+            ref:"Video",
+        },
+        password: {
+            type: String,
+            required: [true,'Password is requiredr']
+        },
+
+        refreshToken: {
+            type: String,
+        },
+        refreshToken: {
+            type: String,
+        },
+        },
+        {
+            timestamps: true,
+        }
+)
+
+userSchema.pre("save", async function (next) {
+    if(!this.isModified("password")) return next();
+
+    this.password = bcrypt.hash(this.password, 10)
+    next()
+})
+
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password)
+}
+
+userSchema.methods.genetateAccessToken = function() {
+    return jwt.sign(
+        {
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullname: this.fullname
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+            espiresIn: process.env.ACCESS_TOKEN_EIPIRY
+        }
+    )
+}
+
+userSchema.methods.genetateAccessToken = function() {
+    
+}
+
+export const User = mongoose.model("User", userSchema);
