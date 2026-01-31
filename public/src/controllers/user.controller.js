@@ -162,6 +162,46 @@ const loginUser = asynchandler(async (req,res) => {
         )
 })
 
+const logoutUser = asynchandler(async(req,res) => {
+    await User.findByIdAndUpdate(
+    req.user._id,
+    {
+        $set: {
+            refreshToken: undefined
+        }
+    },
+    {
+        new : true
+    }
 
-export { registerUser, loginUser }
+    )
+
+
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken
+                },
+                "User logged in successfully"
+            )
+        )
+})
+
+
+
+
+export { registerUser, loginUser, logoutUser }
  
