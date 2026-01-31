@@ -6,8 +6,8 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asynchandler(async (req,res) => {
-    res.status(200).json({
-        message:"Ok,My name is Shivam Mishra"
+    // res.status(200).json({
+        // message:"Ok,My name is Shivam Mishra"
         // get the user Detailed from fruntend.
         // vlidation- not empty
         // Check if the user already exist.
@@ -17,7 +17,7 @@ const registerUser = asynchandler(async (req,res) => {
         // remove password and refresh token field from the response
         // Check for user creation
         // return res
-    })
+    // })
 
     const {fullname  , username, email, password} = req.body
     console.log(email);
@@ -35,7 +35,7 @@ const registerUser = asynchandler(async (req,res) => {
         throw new ApiError(400, "Password is required")
     }
 
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{username} , {email}]
     })
 
@@ -43,8 +43,15 @@ const registerUser = asynchandler(async (req,res) => {
         throw new ApiError(400,"User with email or all user existed")
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    const avatarLocalPath = req.files?.avatar[0].path
+    console.log("MULTER LOG: ", avatarLocalPath);
+    
+    // const coverImageLocalPath = req.files?.coverImage[0]?.pa
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length>0) {
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
 
     if(!avatarLocalPath) {
         throw new ApiError(400,"Avatar file is required")
@@ -76,7 +83,7 @@ const registerUser = asynchandler(async (req,res) => {
     }
 
     return res.status(201).json(
-        new ApiResponse(200, createUser, "User registered Successfully ")
+        new ApiResponse(200, createUser, "User registered Successfully")
     )
 })
 
