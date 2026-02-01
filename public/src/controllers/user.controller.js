@@ -5,6 +5,7 @@ import {User} from "../models/User.models.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
+import { access } from "fs";
 
 const registerUser = asynchandler(async (req,res) => {
     // res.status(200).json({
@@ -89,7 +90,6 @@ console.log("File: ",req.files);
         new ApiResponse(200, createUser, "User registered Successfully")
     )
 })
-
 
 const generateAccessandRefreshToken = async(userId) => {
     try {
