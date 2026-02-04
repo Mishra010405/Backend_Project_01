@@ -64,7 +64,6 @@ console.log("File: ",req.files);
     const avatar = await uploadonCloudinary(avatarLocalPath)
     const coverImage = await uploadonCloudinary(coverImageLocalPath)
     
-    console.log("Avatar hai ye ", avatar);
     
     if(!avatar) {
         throw new ApiError(400,"Avatar file is required")
@@ -367,6 +366,13 @@ const updateUsercoverImg = asynchandler(async(req,res) => {
     return res
     .status(200)
     .json(ApiResponse(200, user, "Cover Image updated success fully"))
+})
+
+
+const getUserChannelProfile = asynchandler(async (req,res) => {
+    const {username} req.params
+
+    if(!username)
 })
 
 export { registerUser,
